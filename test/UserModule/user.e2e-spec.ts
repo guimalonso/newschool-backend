@@ -1,6 +1,7 @@
 import * as request from 'supertest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
+import { initializeTransactionalContext, patchTypeORMRepositoryWithBaseRepository } from 'typeorm-transactional-cls-hooked';
 import { AppModule } from '../../src/app.module';
 import { Connection, EntityManager, QueryRunner, Repository } from 'typeorm';
 import { ClientCredentials, Role } from '../../src/SecurityModule/entity';
@@ -22,6 +23,9 @@ describe('UserController (e2e)', () => {
   const userUrl = `/${Constants.API_PREFIX}/${Constants.API_VERSION_1}/${Constants.USER_ENDPOINT}`;
 
   beforeAll(async () => {
+    initializeTransactionalContext();
+    patchTypeORMRepositoryWithBaseRepository();
+
     moduleFixture = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
@@ -36,6 +40,7 @@ describe('UserController (e2e)', () => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
     // @ts-ignore
     queryRunner = manager.queryRunner = dbConnection.createQueryRunner('master');
+    await queryRunner.connect();
 
     const roleRepository: Repository<Role> = moduleFixture.get<Repository<Role>>(getRepositoryToken(Role));
     const role: Role = new Role();
@@ -50,14 +55,6 @@ describe('UserController (e2e)', () => {
     clientCredentials.role = savedRole;
     await clientCredentialRepository.save(clientCredentials);
     authorization = stringToBase64(`${clientCredentials.name}:${clientCredentials.secret}`);
-  });
-
-  beforeEach(async () => {
-    await queryRunner.startTransaction();
-  });
-
-  afterEach(async () => {
-    await queryRunner.rollbackTransaction();
   });
 
   it('should add user', async (done) => {
@@ -215,6 +212,7 @@ describe('UserController (e2e)', () => {
   });
 
   afterAll(async () => {
+    await queryRunner.clearDatabase();
     await app.close();
   });
 });
