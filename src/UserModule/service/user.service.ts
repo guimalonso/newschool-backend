@@ -73,7 +73,7 @@ export class UserService {
   @Transactional()
   public async update(id: User['id'], userUpdatedInfo: UserUpdateDTO): Promise<User> {
     const user: User = await this.findById(id);
-    const role: Role = await this.roleService.findByRoleName(userUpdatedInfo.role.name);
+    const role: Role = await this.roleService.findByRoleName(userUpdatedInfo.role);
     return this.repository.save({ ...user, ...userUpdatedInfo, role });
   }
 
