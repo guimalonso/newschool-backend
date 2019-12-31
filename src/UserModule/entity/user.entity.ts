@@ -1,5 +1,12 @@
 import * as crypto from 'crypto';
-import { Column, Entity, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  ManyToMany,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { Audit } from '../../CommonsModule';
 import { Role } from '../../SecurityModule';
 import { ChangePassword } from './change-password.entity';
@@ -40,20 +47,35 @@ export class User extends Audit {
   @Expose()
   salt: string;
 
-  @ManyToOne(() => Role, (role: Role) => role.users)
+  @ManyToOne(
+    () => Role,
+    (role: Role) => role.users,
+  )
   @Expose()
   role: Role;
 
-  @OneToMany<ChangePassword>(() => ChangePassword, (changePassword: ChangePassword) => changePassword.user)
+  @OneToMany<ChangePassword>(
+    () => ChangePassword,
+    (changePassword: ChangePassword) => changePassword.user,
+  )
   @Expose()
   changePasswordRequests: ChangePassword[];
 
-  @ManyToMany(() => Certificate, (certficate: Certificate) => certficate.users)
+  @ManyToMany(
+    () => Certificate,
+    (certficate: Certificate) => certficate.users,
+  )
   @Expose()
   certificates: Certificate[];
 
   validPassword(password: string) {
-    const hash = crypto.pbkdf2Sync(password, this.salt, 1000, 64, `sha512`).toString(`hex`);
+    const hash = crypto
+      .pbkdf2Sync(password, this.salt, 1000, 64, `sha512`)
+      .toString(`hex`);
+    return this.password === hash;
+  }
+
+  validPasswordHash(hash: string) {
     return this.password === hash;
   }
 }

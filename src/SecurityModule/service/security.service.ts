@@ -19,11 +19,12 @@ export class SecurityService {
     private readonly jwtService: JwtService,
     private readonly userService: UserService,
     private readonly configService: ConfigService,
-  ) {
-  }
+  ) {}
 
   @Transactional()
-  public async validateClientCredentials(base64Login: string): Promise<GeneratedTokenDTO> {
+  public async validateClientCredentials(
+    base64Login: string,
+  ): Promise<GeneratedTokenDTO> {
     const [name, secret]: string[] = this.splitClientCredentials(
       this.base64ToString(base64Login),
     );
@@ -44,12 +45,15 @@ export class SecurityService {
   }
 
   private base64ToString(base64Login: string): string {
-    return Buffer.from(base64Login, 'base64')
-      .toString('ascii');
+    return Buffer.from(base64Login, 'base64').toString('ascii');
   }
 
   @Transactional()
-  public async validateUserCredentials(base64Login: string, username: string, password: string): Promise<GeneratedTokenDTO> {
+  public async validateUserCredentials(
+    base64Login: string,
+    username: string,
+    password: string,
+  ): Promise<GeneratedTokenDTO> {
     const [name, secret]: string[] = this.splitClientCredentials(
       this.base64ToString(base64Login),
     );
@@ -57,12 +61,18 @@ export class SecurityService {
       ClientCredentialsEnum[name],
       secret,
     );
-    const user: User = await this.userService.findByEmailAndPassword(username, password);
+    const user: User = await this.userService.findByEmailAndPassword(
+      username,
+      password,
+    );
     return this.generateLoginObject(user);
   }
 
   @Transactional()
-  public async refreshToken(base64Login: string, refreshToken: string): Promise<GeneratedTokenDTO> {
+  public async refreshToken(
+    base64Login: string,
+    refreshToken: string,
+  ): Promise<GeneratedTokenDTO> {
     const [name, secret]: string[] = this.splitClientCredentials(
       this.base64ToString(base64Login),
     );
@@ -70,8 +80,13 @@ export class SecurityService {
       ClientCredentialsEnum[name],
       secret,
     );
-    const { email, password }: User = this.getUserFromToken(refreshToken.split(' ')[1]);
-    const user: User = await this.userService.findByEmailAndPassword(email, password);
+    const { email, password }: User = this.getUserFromToken(
+      refreshToken.split(' ')[1],
+    );
+    const user: User = await this.userService.findByEmailAndPasswordHash(
+      email,
+      password,
+    );
     return this.generateLoginObject(user);
   }
 
@@ -79,20 +94,32 @@ export class SecurityService {
     return this.jwtService.verify<User>(jwt);
   }
 
-  private generateLoginObject(authenticatedUser: ClientCredentials | User): GeneratedTokenDTO {
+  private generateLoginObject(
+    authenticatedUser: ClientCredentials | User,
+  ): GeneratedTokenDTO {
     return {
-      accessToken: this.jwtService.sign(classToPlain(authenticatedUser), { expiresIn: this.configService.get<string>('EXPIRES_IN_ACCESS_TOKEN') }),
-      refreshToken: this.jwtService.sign(classToPlain(authenticatedUser), { expiresIn: this.configService.get<string>('EXPIRES_IN_REFRESH_TOKEN') }),
+      accessToken: this.jwtService.sign(classToPlain(authenticatedUser), {
+        expiresIn: this.configService.get<string>('EXPIRES_IN_ACCESS_TOKEN'),
+      }),
+      refreshToken: this.jwtService.sign(classToPlain(authenticatedUser), {
+        expiresIn: this.configService.get<string>('EXPIRES_IN_REFRESH_TOKEN'),
+      }),
       tokenType: 'bearer',
       expiresIn: this.configService.get<string>('EXPIRES_IN_ACCESS_TOKEN'),
     };
   }
 
-  private async findClientCredentialsByNameAndSecret(name: ClientCredentialsEnum, secret: string): Promise<ClientCredentials> {
+  private async findClientCredentialsByNameAndSecret(
+    name: ClientCredentialsEnum,
+    secret: string,
+  ): Promise<ClientCredentials> {
     if (!name) {
       throw new InvalidClientCredentialsError();
     }
-    const clientCredentials: ClientCredentials = await this.clientCredentialsRepository.findByNameAndSecret(name, secret);
+    const clientCredentials: ClientCredentials = await this.clientCredentialsRepository.findByNameAndSecret(
+      name,
+      secret,
+    );
     if (!clientCredentials) {
       throw new InvalidClientCredentialsError();
     }
