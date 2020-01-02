@@ -102,14 +102,6 @@ export class UserService {
     return user;
   }
 
-  public async findByEmailAndPasswordHash(email: string, hash: string): Promise<User> {
-    const user: User = await this.findByEmail(email);
-    if (!user.validPasswordHash(hash)) {
-      throw new UserNotFoundError();
-    }
-    return user;
-  }
-
   @Transactional()
   public async validateChangePassword(changePasswordRequestId: string) {
     const changePassword: ChangePassword = await this.changePasswordService.findById(changePasswordRequestId);

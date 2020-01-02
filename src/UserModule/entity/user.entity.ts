@@ -56,8 +56,4 @@ export class User extends Audit {
     const hash = crypto.pbkdf2Sync(password, this.salt, 1000, 64, `sha512`).toString(`hex`);
     return this.password === hash;
   }
-
-  validPasswordHash(hash: string) {
-    return this.password === hash;
-  }
 }
