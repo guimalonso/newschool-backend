@@ -71,9 +71,10 @@ export class UserService {
   }
 
   @Transactional()
-  public async update(id: User['id'], userUpdatedInfo: User): Promise<User> {
+  public async update(id: User['id'], userUpdatedInfo: UserUpdateDTO): Promise<User> {
     const user: User = await this.findById(id);
-    return this.repository.save({ ...user, ...userUpdatedInfo });
+    const role: Role = await this.roleService.findByRoleName(userUpdatedInfo.role);
+    return this.repository.save({ ...user, ...userUpdatedInfo, role });
   }
 
   public async forgotPassword(forgotPasswordDTO: ForgotPasswordDTO): Promise<string> {
@@ -96,6 +97,14 @@ export class UserService {
   public async findByEmailAndPassword(email: string, password: string): Promise<User> {
     const user: User = await this.findByEmail(email);
     if (!user.validPassword(password)) {
+      throw new UserNotFoundError();
+    }
+    return user;
+  }
+
+  public async findByEmailAndPasswordHash(email: string, hash: string): Promise<User> {
+    const user: User = await this.findByEmail(email);
+    if (!user.validPasswordHash(hash)) {
       throw new UserNotFoundError();
     }
     return user;

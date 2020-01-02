@@ -71,7 +71,7 @@ export class SecurityService {
       secret,
     );
     const { email, password }: User = this.getUserFromToken(refreshToken.split(' ')[1]);
-    const user: User = await this.userService.findByEmailAndPassword(email, password);
+    const user: User = await this.userService.findByEmailAndPasswordHash(email, password);
     return this.generateLoginObject(user);
   }
 
