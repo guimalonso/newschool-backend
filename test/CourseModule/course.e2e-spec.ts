@@ -8,8 +8,8 @@ import { ClientCredentials, Role } from '../../src/SecurityModule/entity';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { ClientCredentialsEnum, GrantTypeEnum, RoleEnum } from '../../src/SecurityModule/enum';
 import { Constants } from '../../src/CommonsModule';
-import { Course } from '../../src/CourseModule';
 import { NewCourseDTO, CourseUpdateDTO } from 'src/CourseModule/dto';
+import { initializeTransactionalContext } from 'typeorm-transactional-cls-hooked';
 
 const stringToBase64 = (string: string) => {
   return Buffer.from(string).toString('base64');
@@ -31,6 +31,7 @@ describe('CourseController (e2e)', () => {
       imports: [AppModule],
     }).compile();
 
+    initializeTransactionalContext();
     app = moduleFixture.createNestApplication();
     app.useGlobalPipes(new ValidationPipe());
     await app.init();

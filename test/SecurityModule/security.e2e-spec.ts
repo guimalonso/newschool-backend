@@ -10,6 +10,7 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { ClientCredentialsEnum, GrantTypeEnum, RoleEnum } from '../../src/SecurityModule/enum';
 import { User } from '../../src/UserModule/entity';
 import * as crypto from 'crypto';
+import { initializeTransactionalContext } from 'typeorm-transactional-cls-hooked';
 
 const stringToBase64 = (string: string) => {
   return Buffer.from(string).toString('base64');
@@ -39,6 +40,7 @@ describe('SecurityController (e2e)', () => {
       imports: [AppModule],
     }).compile();
 
+    initializeTransactionalContext();
     app = moduleFixture.createNestApplication();
     app.useGlobalPipes(new ValidationPipe());
     await app.init();
