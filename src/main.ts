@@ -9,7 +9,6 @@ import {
 } from 'typeorm-transactional-cls-hooked';
 import { HttpExceptionFilter } from './CommonsModule/httpFilter/http-exception.filter';
 import 'reflect-metadata';
-import { QueryFailedErrorExceptionFilter } from './CommonsModule/exceptionFilter';
 
 async function bootstrap() {
   require('dotenv-flow').config();
@@ -35,8 +34,6 @@ async function bootstrap() {
     }),
   );
 
-  app.useGlobalFilters(new QueryFailedErrorExceptionFilter());
-
   const configService = app.get<ConfigService>(ConfigService);
 
   app.useGlobalFilters(new HttpExceptionFilter(configService));
@@ -44,4 +41,4 @@ async function bootstrap() {
   await app.listen(configService.get<number>('PORT') || 8080);
 }
 
-bootstrap();
+bootstrap();  

@@ -25,10 +25,23 @@ export class Course extends Audit {
   description: string;
 
   @Column({
+    nullable: false,
+  })
+  @Expose()
+  workload: string;
+
+  @Column({
     nullable: true,
   })
   @Expose()
   thumbUrl: string;
+
+  @Column({
+    type: 'boolean',
+    default: true
+  })
+  @Expose()
+  enabled: boolean;
 
   @ManyToOne<User>('User', (user: User) => user.createdCourses)
   @JoinColumn({ name: 'userId' })
