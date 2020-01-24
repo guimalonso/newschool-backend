@@ -8,6 +8,7 @@ import { SecurityModule } from './SecurityModule';
 import { UserModule } from './UserModule';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CourseModule } from './CourseModule';
+import { CourseTakenModule } from './CourseTakenModule';
 import { CertificateModule } from './CertificateModule';
 import { MessageModule } from './MessageModule';
 import { UploadModule } from './UploadModule';
@@ -45,6 +46,7 @@ import { UploadModule } from './UploadModule';
     SecurityModule,
     UserModule,
     CourseModule,
+    CourseTakenModule,
     CertificateModule,
     MessageModule,
     UploadModule,
@@ -52,5 +54,4 @@ import { UploadModule } from './UploadModule';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {
-}
+export class AppModule {}

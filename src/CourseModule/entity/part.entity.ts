@@ -1,5 +1,13 @@
 import { Audit } from '../../CommonsModule';
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, Unique } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  Unique,
+} from 'typeorm';
 import { Lesson } from './lesson.entity';
 import { Test } from './test.entity';
 
@@ -12,6 +20,7 @@ export class Part extends Audit {
   @Column({
     nullable: false,
     name: 'title',
+    unique: true,
   })
   title: string;
 
@@ -33,7 +42,7 @@ export class Part extends Audit {
   })
   youtubeUrl: string;
 
-  @ManyToOne<Lesson>(() => Lesson, (lesson: Lesson) => lesson.parts)
+  @ManyToOne<Lesson>('Lesson', (lesson: Lesson) => lesson.parts)
   @JoinColumn({
     name: 'lesson_id',
   })
@@ -45,6 +54,6 @@ export class Part extends Audit {
   })
   sequenceNumber: number;
 
-  @OneToMany<Test>(() => Test, (test: Test) => test.part)
+  @OneToMany<Test>('Test', (test: Test) => test.part)
   tests: Test[];
 }

@@ -1,9 +1,9 @@
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Audit } from '../../CommonsModule';
 import { Lesson } from './lesson.entity';
 import { Expose } from 'class-transformer';
 import slugify from 'slugify';
-import { User } from '../../UserModule';
+import { CourseTaken } from '../../CourseTakenModule/entity';
 
 @Entity()
 export class Course extends Audit {
@@ -50,7 +50,7 @@ export class Course extends Audit {
 
   @Column({
     type: 'boolean',
-    default: true
+    default: true,
   })
   @Expose()
   enabled: boolean;
@@ -58,8 +58,14 @@ export class Course extends Audit {
   @Column()
   photoName: string;
 
-  @OneToMany<Lesson>(() => Lesson, (lesson: Lesson) => lesson.course)
+  @OneToMany<Lesson>('Lesson', (lesson: Lesson) => lesson.course)
   lessons: Lesson[];
+
+  @OneToMany<CourseTaken>(
+    'CourseTaken',
+    (takenCourses: CourseTaken) => takenCourses.course,
+  )
+  takenCourses: CourseTaken[];
 
   @Column()
   @Expose()
@@ -68,7 +74,5 @@ export class Course extends Audit {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  set slug(slug: string) {
-  }
-
+  set slug(slug: string) {}
 }
