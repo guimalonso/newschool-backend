@@ -1,36 +1,14 @@
-import { ApiModelProperty } from '@nestjs/swagger';
-import { IsString } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
+import { IsNotEmpty, IsString } from 'class-validator';
 
 export class GoogleAuthUserDTO {
-  @ApiModelProperty({ type: String })
-  @IsString()
-  email: string;
-
-  @ApiModelProperty({ type: String })
-  @IsString()
-  email_verified: boolean;
-
-  @ApiModelProperty({ type: String })
-  @IsString()
-  family_name: string;
-
-  @ApiModelProperty({ type: String })
-  @IsString()
-  given_name: string;
-
-  @ApiModelProperty({ type: String })
-  @IsString()
-  locale: string;
-
-  @ApiModelProperty({ type: String })
-  @IsString()
-  name: string;
-
-  @ApiModelProperty({ type: String })
-  @IsString()
-  picture: string;
-
-  @ApiModelProperty({ type: String })
+  @ApiProperty({ type: String })
+  @IsNotEmpty()
   @IsString()
   sub: string;
+
+  @ApiProperty({ type: String })
+  @IsNotEmpty()
+  @IsString()
+  email: string;
 }

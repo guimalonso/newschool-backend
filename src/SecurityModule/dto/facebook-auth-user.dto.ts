@@ -1,17 +1,14 @@
-import { ApiModelProperty } from '@nestjs/swagger';
-import { IsString } from 'class-validator';
+import { IsNotEmpty, IsString } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class FacebookAuthUserDTO {
-  @ApiModelProperty({ type: String })
-  @IsString()
-  birthday: string;
-  @ApiModelProperty({ type: String })
-  @IsString()
-  email: string;
-  @ApiModelProperty({ type: String })
+  @ApiProperty({ type: String })
+  @IsNotEmpty()
   @IsString()
   id: string;
-  @ApiModelProperty({ type: String })
+
+  @ApiProperty({ type: String })
+  @IsNotEmpty()
   @IsString()
-  name: string;
+  email: string;
 }
